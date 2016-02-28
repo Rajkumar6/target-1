@@ -1,0 +1,32 @@
+#%RAML 0.8
+---
+title: My Retail Service API
+baseUri: http://localhost/api/{version}
+version: v1.0
+
+/products/{id}:
+  get:
+    description: Delivers product data where {id} will be a number 
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              "id":13860428,
+              "name":"The Big Lebowski (Blu-ray) (Widescreen)",
+              "current_price":{"value": 13.49,"currency_code":"USD"}              
+  put:
+    body: 
+      application/json:
+        example: |
+          "id":13860428,
+          "name":"The Big Lebowski (Blu-ray) (Widescreen)",
+          "current_price":{"value": 13.49,"currency_code":"USD"}
+    responses:
+      200:
+        body:
+         application/json:
+            example: | 
+              "id":13860428,
+              "name":"The Big Lebowski (Blu-ray) (Widescreen)",
+              "current_price":{"value": 13.49,"currency_code":"USD"}

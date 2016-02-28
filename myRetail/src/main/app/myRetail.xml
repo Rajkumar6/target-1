@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd">
+    <http:listener-config name="myRetail-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <apikit:config name="myRetail-config" raml="myRetail.raml" consoleEnabled="true" consolePath="console" doc:name="Router"/>
+    <http:request-config name="TargetRestServiceConfiguration" protocol="HTTPS" host="api.target.com" port="443" doc:name="HTTP Request Configuration"/>
+    <mongo:config name="Mongo_DB" database="myRetail" doc:name="Mongo DB" password="password" username="accountUser"/>
+    <flow name="myRetail-main">
+        <http:listener config-ref="myRetail-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
+        <apikit:router config-ref="myRetail-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="myRetail-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="put:/products/{id}:myRetail-config">
+        <set-payload value="&quot;id&quot;:13860428,&#xA;&quot;name&quot;:&quot;The Big Lebowski (Blu-ray) (Widescreen)&quot;,&#xA;&quot;current_price&quot;:{&quot;value&quot;: 13.49,&quot;currency_code&quot;:&quot;USD&quot;}" doc:name="Set Payload"/>
+    </flow>
+    <flow name="get:/products/{id}:myRetail-config">
+        <logger message="Inbound get request #[flowVars.id]" level="INFO" doc:name="Logger"/>
+        <scatter-gather doc:name="Scatter-Gather">
+            <custom-aggregation-strategy class="com.myRetail.MyRetailAggregationStrategy"/>
+            <processor-chain>
+                <logger message="Calling DB..." level="INFO" doc:name="Logger"/>
+                <mongo:find-one-object-using-query-map config-ref="Mongo_DB" collection="prices" doc:name="Mongo DB">
+                    <mongo:query-attributes>
+                        <mongo:query-attribute key="_id">#[flowVars.id]</mongo:query-attribute>
+                    </mongo:query-attributes>
+                </mongo:find-one-object-using-query-map>
+                <mongo:dbobject-to-json doc:name="Mongo DB"/>
+                <json:json-to-object-transformer doc:name="JSON to Object"/>
+                <logger message="DB Found: #[payload]" level="INFO" doc:name="Logger"/>
+            </processor-chain>
+            <processor-chain>
+                <http:request config-ref="TargetRestServiceConfiguration" path="products/v3/{id}" method="GET" doc:name="HTTP" parseResponse="false">
+            <http:request-builder>
+                <http:query-param paramName="fields" value="descriptions"/>
+                <http:query-param paramName="id_type" value="TCIN"/>
+                <http:query-param paramName="key" value="43cJWpLjH8Z8oR18KdrZDBKAgLLQKJjz"/>
+                <http:uri-param paramName="id" value="#[flowVars.id]"/>
+                <http:header headerName="Content-Type" value="text/json"/>
+            </http:request-builder>
+            <http:success-status-code-validator values="200"/>
+        </http:request>
+                <object-to-string-transformer doc:name="Object to String"/>
+                <json:object-to-json-transformer doc:name="Object to JSON"/>
+                <json:json-to-object-transformer doc:name="JSON to Object"/>
+                <logger message="Service Found: #[payload]" level="INFO" doc:name="Logger"/>
+            </processor-chain>
+        </scatter-gather>
+        <logger message="Gathered: #[payload]" level="INFO" doc:name="Logger"/>
+        
+    </flow>
+    <apikit:mapping-exception-strategy name="myRetail-apiKitGlobalExceptionMapping">
+        <apikit:mapping statusCode="404">
+            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="405">
+            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="415">
+            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="406">
+            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+        <apikit:mapping statusCode="400">
+            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
+        </apikit:mapping>
+    </apikit:mapping-exception-strategy>
+</mule>

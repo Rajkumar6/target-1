@@ -1,0 +1,7 @@
+{
+	_id: PRODUCT_ID
+	price: {
+		value: NUMBER,
+		type: STRING
+	}
+}
