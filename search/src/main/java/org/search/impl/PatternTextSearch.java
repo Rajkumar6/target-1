@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.io.FileUtils;
 import org.search.ITextSearch;
@@ -19,11 +20,11 @@ import com.google.inject.name.Named;
 public class PatternTextSearch implements ITextSearch {
 
     private Map<File, String> fileMap = new HashMap<>();
-    
+
     private File docDir;
-    
+
     @Inject
-    public PatternTextSearch(@Named(value="docDir") File docDir) {
+    public PatternTextSearch(@Named(value = "docDir") File docDir) {
         this.docDir = docDir;
         try {
             readFiles();
@@ -31,7 +32,6 @@ public class PatternTextSearch implements ITextSearch {
             throw new IllegalStateException("Failed to build document cache", e);
         }
     }
-    
 
     private void readFiles() throws IOException {
         for (File file : docDir.listFiles()) {
@@ -39,13 +39,13 @@ public class PatternTextSearch implements ITextSearch {
         }
     }
 
-
     @Override
     public List<Relevancy> getRelevancy(String search) throws IOException {
         List<Relevancy> retVal = new ArrayList<>();
         for (Map.Entry<File, String> entry : fileMap.entrySet()) {
             String content = fileMap.get(entry.getKey());
-            Pattern pattern = Pattern.compile(search);
+            Pattern pattern = Pattern.compile(search, Pattern.LITERAL);
+
             Matcher matcher = pattern.matcher(content);
             int count = 0;
             while (matcher.find()) {
