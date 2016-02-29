@@ -3,7 +3,6 @@ package org.search.app;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
 
 import org.search.ITextSearch;

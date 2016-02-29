@@ -1,14 +1,14 @@
 package org.search.impl;
 
-import static org.junit.Assert.*;
+import java.io.File;
 
-import org.junit.Test;
+import org.search.ITextSearch;
 
-public class SimpleTextSearchTest {
+public class SimpleTextSearchTest extends AbstractTextSearchTest {
 
-    @Test
-    public void testGetRelevancy() {
-        fail("Not yet implemented");
+    @Override
+    protected ITextSearch createFixture(File docDir) {
+        return new SimpleTextSearch(docDir);
     }
 
 }
