@@ -1,4 +1,4 @@
-package com.target.search;
+package org.search;
 
 import java.io.IOException;
 import java.util.List;

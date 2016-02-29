@@ -1,11 +1,12 @@
-package com.target.search.app;
+package org.search.app;
 
 import java.io.File;
+
+import org.search.ITextSearch;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 import com.google.inject.spi.Message;
-import com.target.search.ITextSearch;
 
 public class DocumentSearchModule extends AbstractModule {
 

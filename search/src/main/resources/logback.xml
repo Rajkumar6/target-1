@@ -10,7 +10,7 @@
     </encoder>
   </appender>
 
-  <logger name="com.target.search" level="INFO" additivity="false">
+  <logger name="org.search" level="INFO" additivity="false">
    <appender-ref ref="STDOUT" />
   </logger>
 

@@ -1,4 +1,4 @@
-package com.target.search;
+package org.search;
 
 public class Relevancy {
     private final int matches;

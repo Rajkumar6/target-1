@@ -1,21 +1,26 @@
-package com.target.search.app;
+package org.search.app;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Scanner;
 
+import org.search.ITextSearch;
+import org.search.Relevancy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Guice;
-import com.target.search.ITextSearch;
-import com.target.search.Relevancy;
 
 /**
  * Hello world!
  *
  */
 public class DocumentSearchMain {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSearchMain.class);
 
     public static void main(String[] args) {
+        LOGGER.debug("Starting...");
         int method;
         String term;
         try (Scanner scan = new Scanner(System.in)) {
@@ -68,5 +73,7 @@ public class DocumentSearchMain {
             System.out.println(MessageFormat.format("\t{0} - {1} matches", r.getDocument(), r.getMatches()));
         }
         System.out.println(MessageFormat.format("Elapsed time: {0} ms", end - start));
+        
+        LOGGER.debug("DONE");
     }
 }

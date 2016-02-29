@@ -12,7 +12,6 @@
 
  <properties>
   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  <lucene-version>5.5.0</lucene-version>
   <slf4jVersion>1.6.1</slf4jVersion>
   <logback.version>1.1.5</logback.version>
  </properties>
@@ -32,32 +31,6 @@
    <groupId>org.apache.commons</groupId>
    <artifactId>commons-lang3</artifactId>
    <version>3.4</version>
-  </dependency>
-
-  <dependency>
-   <groupId>org.apache.lucene</groupId>
-   <artifactId>lucene-core</artifactId>
-   <version>${lucene-version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.apache.lucene</groupId>
-   <artifactId>lucene-analyzers-common</artifactId>
-   <version>${lucene-version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.apache.lucene</groupId>
-   <artifactId>lucene-queryparser</artifactId>
-   <version>${lucene-version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.apache.lucene</groupId>
-   <artifactId>lucene-queries</artifactId>
-   <version>${lucene-version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.apache.lucene</groupId>
-   <artifactId>lucene-demo</artifactId>
-   <version>${lucene-version}</version>
   </dependency>
 
 

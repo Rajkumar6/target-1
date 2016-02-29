@@ -1,9 +1,9 @@
-package com.target.search.app;
+package org.search.app;
 
-import com.target.search.ITextSearch;
-import com.target.search.impl.IndexedTextSearch;
-import com.target.search.impl.PatternTextSearch;
-import com.target.search.impl.SimpleTextSearch;
+import org.search.ITextSearch;
+import org.search.impl.IndexedTextSearch;
+import org.search.impl.PatternTextSearch;
+import org.search.impl.SimpleTextSearch;
 
 public enum DocumentSearchType {
     STRING(SimpleTextSearch.class), 
