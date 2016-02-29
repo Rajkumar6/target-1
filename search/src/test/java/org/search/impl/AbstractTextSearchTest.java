@@ -39,7 +39,7 @@ public abstract class AbstractTextSearchTest {
     public void testGetRelevancy2() throws IOException {
         List<Relevancy> expected = Arrays.asList(
                 new Relevancy(24, "hitchhikers.txt"),
-                new Relevancy(1, "simple.txt"),
+                new Relevancy(2, "simple.txt"),
                 new Relevancy(59, "french_armed_forces.txt"),
                 new Relevancy(9, "warp_drive.txt"));
         List<Relevancy> result = fixture.getRelevancy("the");
