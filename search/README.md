@@ -36,5 +36,7 @@ There are multiple factors to consider when defining the necessary hardware requ
 
 ## Follow On Questions
 1. Case sensitive?
+1. Sub sequences?
+1. Multi-word phrases?
 1. Regular Expression matching.
 1. How does document size and number of documents effect processing performance?
