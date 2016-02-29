@@ -11,7 +11,7 @@ import com.google.inject.spi.Message;
 public class DocumentSearchModule extends AbstractModule {
 
     private DocumentSearchType type;
-    private File docDir = new File("src/test/resources/sample_text");
+    private File docDir = new File(System.getProperty("DOC_DIR", "src/test/resources/sample_text"));
 
     @Override
     protected void configure() {

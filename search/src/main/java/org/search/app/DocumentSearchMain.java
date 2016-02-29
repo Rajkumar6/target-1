@@ -3,6 +3,7 @@ package org.search.app;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 import org.search.ITextSearch;
@@ -12,15 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 
-/**
- * Hello world!
- *
- */
 public class DocumentSearchMain {
     private static final Logger LOGGER = LoggerFactory.getLogger(DocumentSearchMain.class);
 
     public static void main(String[] args) {
         LOGGER.debug("Starting...");
+
         int method;
         String term;
         try (Scanner scan = new Scanner(System.in)) {
