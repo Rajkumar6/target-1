@@ -62,7 +62,7 @@ public class DocumentSearchMain {
         try {
             result = search.getRelevancy(term);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Fatal error", e);
             System.exit(-1);
             // Just so compiler doesn't complain
             return;

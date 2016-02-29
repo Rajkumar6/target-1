@@ -20,6 +20,7 @@ public class WordListBuilderMain {
     private static final Logger LOGGER = LoggerFactory.getLogger(WordListBuilderMain.class);
 
     public static void main(String[] args) {
+        LOGGER.debug("Start");
         Set<String> allWords = new HashSet<>();
         try {
             
@@ -39,8 +40,9 @@ public class WordListBuilderMain {
             
             Files.write(Paths.get("src/test/resources/wordList.txt"), finalList);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error while writing out word list", e);
         }
+        LOGGER.debug("Done");
     }
 
 }

@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.search.ITextSearch;
-import org.search.Relevancy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +28,8 @@ public class StatsRunnerMain {
         List<String> words;
         try {
             words = Files.readAllLines(Paths.get("src/test/resources/wordList.txt"));
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("Error while reading in word list", e);
             System.exit(-1);
             return;
         }
@@ -52,8 +51,9 @@ public class StatsRunnerMain {
             
             long start = System.currentTimeMillis();
             for (int i = 0; i <= runSize; i++) {
+                String word = words.get(i % words.size());
                 try {
-                    search.getRelevancy(words.get(i % words.size()));
+                    search.getRelevancy(word);
                     if (i % stepSize == 0) {
                         long end = System.currentTimeMillis();
                         results.get(stepIndex).time.put(type, (end - start));
@@ -61,7 +61,7 @@ public class StatsRunnerMain {
                         LOGGER.debug("Running type: {} {}", type, i);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.error("Fatal error", e);
                     System.exit(-1);
                     // Just so compiler doesn't complain
                     return;
@@ -81,7 +81,7 @@ public class StatsRunnerMain {
         try {
             Files.write(Paths.get("target/results.csv"), lines);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Fatal error", e);
             System.exit(-1);
             // Just so compiler doesn't complain
             return;
