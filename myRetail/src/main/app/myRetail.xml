@@ -15,7 +15,22 @@ http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mo
         <exception-strategy ref="myRetail-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
     <flow name="put:/products/{id}:myRetail-config">
-        <set-payload value="&quot;id&quot;:13860428,&#xA;&quot;name&quot;:&quot;The Big Lebowski (Blu-ray) (Widescreen)&quot;,&#xA;&quot;current_price&quot;:{&quot;value&quot;: 13.49,&quot;currency_code&quot;:&quot;USD&quot;}" doc:name="Set Payload"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger message="Put #[flowVars.id] #[payload]" level="INFO" doc:name="Logger"/>
+        <mongo:update-objects-using-map config-ref="Mongo_DB" collection="prices" doc:name="Mongo DB" multi="false" upsert="true">
+            <mongo:query-attributes>
+                <mongo:query-attribute key="_id">#[flowVars.id]</mongo:query-attribute>
+            </mongo:query-attributes>
+            <mongo:element-attributes>
+                <mongo:element-attribute key="current_price">#[payload.current_price]</mongo:element-attribute>
+            </mongo:element-attributes>
+        </mongo:update-objects-using-map>
+        <mongo:dbobject-to-json doc:name="Mongo DB"/>
+        <json:json-to-object-transformer doc:name="JSON to Object"/>
+        <logger message="Finished upsert #[payload]" level="INFO" doc:name="Logger"/>
+        <flow-ref name="get:/products/{id}:myRetail-config" doc:name="get:/products/{id}:myRetail-config"/>
+        <logger message="Put returning #[payload]" level="INFO" doc:name="Logger"/>
     </flow>
     <flow name="get:/products/{id}:myRetail-config">
         <logger message="Inbound get request #[flowVars.id]" level="INFO" doc:name="Logger"/>
@@ -35,11 +50,11 @@ http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mo
             <processor-chain>
                 <http:request config-ref="TargetRestServiceConfiguration" path="products/v3/{id}" method="GET" doc:name="HTTP" parseResponse="false">
             <http:request-builder>
-                <http:query-param paramName="fields" value="descriptions"/>
-                <http:query-param paramName="id_type" value="TCIN"/>
-                <http:query-param paramName="key" value="43cJWpLjH8Z8oR18KdrZDBKAgLLQKJjz"/>
-                <http:uri-param paramName="id" value="#[flowVars.id]"/>
-                <http:header headerName="Content-Type" value="text/json"/>
+                        <http:query-param paramName="fields" value="descriptions"/>
+                        <http:query-param paramName="id_type" value="TCIN"/>
+                        <http:query-param paramName="key" value="43cJWpLjH8Z8oR18KdrZDBKAgLLQKJjz"/>
+                        <http:uri-param paramName="id" value="#[flowVars.id]"/>
+                        <http:header headerName="Content-Type" value="text/json"/>
             </http:request-builder>
             <http:success-status-code-validator values="200"/>
         </http:request>
