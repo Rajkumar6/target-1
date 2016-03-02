@@ -14,7 +14,7 @@ import org.search.Relevancy;
 
 public abstract class AbstractTextSearchTest {
     
-    private ITextSearch fixture;
+    protected ITextSearch fixture;
     
     @Before
     public void setup() {
@@ -55,7 +55,7 @@ public abstract class AbstractTextSearchTest {
                 new Relevancy(0, "simple.txt"),
                 new Relevancy(0, "french_armed_forces.txt"),
                 new Relevancy(0, "warp_drive.txt"));
-        List<Relevancy> result = fixture.getRelevancy("***");
+        List<Relevancy> result = fixture.getRelevancy("1234567890");
         
         assertEquals(expected, result);
     }

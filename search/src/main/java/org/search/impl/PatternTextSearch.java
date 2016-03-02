@@ -13,11 +13,15 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.io.FileUtils;
 import org.search.ITextSearch;
 import org.search.Relevancy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 public class PatternTextSearch implements ITextSearch {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(PatternTextSearch.class);
 
     private Map<File, String> fileMap = new HashMap<>();
 
@@ -44,7 +48,13 @@ public class PatternTextSearch implements ITextSearch {
         List<Relevancy> retVal = new ArrayList<>();
         for (Map.Entry<File, String> entry : fileMap.entrySet()) {
             String content = fileMap.get(entry.getKey());
-            Pattern pattern = Pattern.compile(search, Pattern.LITERAL);
+            Pattern pattern = null;
+            try {
+                pattern = Pattern.compile(search);
+            } catch (PatternSyntaxException e) {
+                LOGGER.error("Invalid pattern:  {}", search);
+                pattern = Pattern.compile(search, Pattern.LITERAL);
+            }
 
             Matcher matcher = pattern.matcher(content);
             int count = 0;

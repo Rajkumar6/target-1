@@ -3,16 +3,15 @@
 "HHGTTG"
 "Hitchhiker's",
 "The
-"[The]
 "bubble"
 "land
 "normal
 "official
 "trilogy"
-(1942).
-(FTL)
-(as
-(first
+\(1942\).
+\(FTL\)
+\(as
+\(first
 -
 10
 109,
@@ -45694,7 +45693,7 @@ franchiser
 franchiser's
 franchisers
 franchises
-franchises).
+franchises\).
 franchising
 francs
 frank
@@ -48933,7 +48932,7 @@ guidance
 guidance's
 guide
 guide's
-guide).
+guide\).
 guide,
 guidebook
 guidebook's
@@ -97359,7 +97358,7 @@ webs
 website
 website's
 websites
-websites)
+websites\)
 wed
 wedded
 wedder
