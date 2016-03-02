@@ -16,24 +16,26 @@ http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mo
     </flow>
     <flow name="put:/products/{id}:myRetail-config">
         <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="Put String: #[payload]" level="INFO" doc:name="Logger"/>
+        <component class="com.myRetail.RetailComponent" doc:name="Java"/>
+        <logger message="Put  id=#[flowVars.id] payload=#[payload] current_price=#[payload.current_price]" level="INFO" doc:name="Logger"/>
+        <set-payload value="#[payload.current_price]" doc:name="Set Payload"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
-        <logger message="Put #[flowVars.id] #[payload]" level="INFO" doc:name="Logger"/>
+        <logger message="Put to db _id=#[flowVars.id] price=#[payload]" level="INFO" doc:name="Logger"/>
         <mongo:update-objects-using-map config-ref="Mongo_DB" collection="prices" doc:name="Mongo DB" multi="false" upsert="true">
             <mongo:query-attributes>
                 <mongo:query-attribute key="_id">#[flowVars.id]</mongo:query-attribute>
             </mongo:query-attributes>
             <mongo:element-attributes>
-                <mongo:element-attribute key="current_price">#[payload.current_price]</mongo:element-attribute>
+                <mongo:element-attribute key="current_price">#[payload]</mongo:element-attribute>
             </mongo:element-attributes>
         </mongo:update-objects-using-map>
-        <mongo:dbobject-to-json doc:name="Mongo DB"/>
-        <json:json-to-object-transformer doc:name="JSON to Object"/>
+        <set-payload value="hello" doc:name="Set Payload"/>
         <logger message="Finished upsert #[payload]" level="INFO" doc:name="Logger"/>
-        <flow-ref name="get:/products/{id}:myRetail-config" doc:name="get:/products/{id}:myRetail-config"/>
+        <flow-ref name="getStatus" doc:name="getStatus"/>
         <logger message="Put returning #[payload]" level="INFO" doc:name="Logger"/>
     </flow>
-    <flow name="get:/products/{id}:myRetail-config">
-        <logger message="Inbound get request #[flowVars.id]" level="INFO" doc:name="Logger"/>
+    <sub-flow name="getStatus">
         <scatter-gather doc:name="Scatter-Gather">
             <custom-aggregation-strategy class="com.myRetail.MyRetailAggregationStrategy"/>
             <processor-chain>
@@ -48,22 +50,27 @@ http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mo
                 <logger message="DB Found: #[payload]" level="INFO" doc:name="Logger"/>
             </processor-chain>
             <processor-chain>
-                <http:request config-ref="TargetRestServiceConfiguration" path="products/v3/{id}" method="GET" doc:name="HTTP" parseResponse="false">
-            <http:request-builder>
+                <http:request config-ref="TargetRestServiceConfiguration" path="products/v3/{id}" method="GET" parseResponse="false" doc:name="HTTP">
+                    <http:request-builder>
                         <http:query-param paramName="fields" value="descriptions"/>
                         <http:query-param paramName="id_type" value="TCIN"/>
                         <http:query-param paramName="key" value="43cJWpLjH8Z8oR18KdrZDBKAgLLQKJjz"/>
                         <http:uri-param paramName="id" value="#[flowVars.id]"/>
                         <http:header headerName="Content-Type" value="text/json"/>
-            </http:request-builder>
-            <http:success-status-code-validator values="200"/>
-        </http:request>
+                    </http:request-builder>
+                    <http:success-status-code-validator values="200"/>
+                </http:request>
                 <object-to-string-transformer doc:name="Object to String"/>
                 <json:object-to-json-transformer doc:name="Object to JSON"/>
                 <json:json-to-object-transformer doc:name="JSON to Object"/>
                 <logger message="Service Found: #[payload]" level="INFO" doc:name="Logger"/>
             </processor-chain>
         </scatter-gather>
+        <logger message="getStatus: #[payload]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+    <flow name="get:/products/{id}:myRetail-config">
+        <logger message="Inbound get request #[flowVars.id]" level="INFO" doc:name="Logger"/>
+        <flow-ref name="getStatus" doc:name="getStatus"/>
         <logger message="Gathered: #[payload]" level="INFO" doc:name="Logger"/>
         
     </flow>

@@ -23,7 +23,8 @@ public class MyRetailAggregationStrategy implements AggregationStrategy {
 		Object price = null;
 		Object name = null;
 		for (MuleEvent event : context.collectEventsWithoutExceptions()) {
-			JsonData data = (JsonData) event.getMessage().getPayload();
+			Object payload = event.getMessage().getPayload();
+			JsonData data = (JsonData) payload;
 			LOGGER.info("Looking at payload: {}", data);
 			if (data.hasNode("current_price")) {
 				price = data.get("current_price");
