@@ -4,3 +4,4 @@
 .studio/
 flows/
 **/*.mflow
+.mule

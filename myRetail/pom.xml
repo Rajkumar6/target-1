@@ -11,10 +11,13 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.reporting.outputEncoding>UTF-8
+		</project.reporting.outputEncoding>
 
 		<mule.version>3.7.0</mule.version>
 		<mule.tools.version>1.1</mule.tools.version>
+		<munit.version>1.1.0</munit.version>
+		<mule.munit.support.version>3.7.1</mule.munit.support.version>
 	</properties>
 
 	<build>
@@ -43,6 +46,14 @@
 						<inclusion>
 							<groupId>org.mule.modules</groupId>
 							<artifactId>mule-module-mongo</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-extensions-support</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-extensions-spring-support</artifactId>
 						</inclusion>
 					</inclusions>
 				</configuration>
@@ -83,37 +94,37 @@
 					</execution>
 				</executions>
 			</plugin>
-<!--
 			<plugin>
-				<groupId>org.mule.tools.maven</groupId>
-				<artifactId>mule-maven-plugin</artifactId>
-				<version>2.0</version>
-				<configuration>
-					<deploymentType>standalone</deploymentType>
-					<muleVersion>${mule.version}</muleVersion>
-					 <arguments>
-			        </arguments>
-					<community>true</community>
-				</configuration>
+				<groupId>com.mulesoft.munit.tools</groupId>
+				<artifactId>munit-maven-plugin</artifactId>
+				<version>${munit.version}</version>
 				<executions>
 					<execution>
-						<id>deploy</id>
-						<phase>deploy</phase>
+						<id>test</id>
+						<phase>test</phase>
 						<goals>
-						    <goal>deploy</goal>
+							<goal>test</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<coverage>
+						<runCoverage>true</runCoverage>
+						<formats>
+							<format>html</format>
+						</formats>
+					</coverage>
+				</configuration>
 			</plugin>
-			<plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-deploy-plugin</artifactId>
-			  <configuration>
-				<skip>true</skip>
-			  </configuration>
-			</plugin>
--->
 		</plugins>
+		<testResources>
+			<testResource>
+				<directory>src/test/munit</directory>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
 	</build>
 
 	<!-- Mule Dependencies -->
@@ -209,7 +220,29 @@
 			<artifactId>gson</artifactId>
 			<version>2.6.2</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>mule-munit-support</artifactId>
+			<version>${mule.munit.support.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-runner</artifactId>
+			<version>${munit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-extensions-support</artifactId>
+			<version>${mule.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-extensions-spring-support</artifactId>
+			<version>${mule.version}</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -237,9 +270,47 @@
 			</snapshots>
 		</pluginRepository>
 		<pluginRepository>
-	        <id>mule-public</id>
-	        <url>https://repository.mulesoft.org/nexus/content/repositories/releases</url>
-	    </pluginRepository>
+			<id>mule-public</id>
+			<url>https://repository.mulesoft.org/nexus/content/repositories/releases
+			</url>
+		</pluginRepository>
 	</pluginRepositories>
-
+	
+	<profiles>
+		<profile>
+			<id>standalone</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.mule.tools.maven</groupId>
+						<artifactId>mule-maven-plugin</artifactId>
+						<version>2.0</version>
+						<configuration>
+							<deploymentType>standalone</deploymentType>
+							<muleVersion>${mule.version}</muleVersion>
+							<arguments>
+							</arguments>
+							<community>true</community>
+						</configuration>
+						<executions>
+							<execution>
+								<id>deploy</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

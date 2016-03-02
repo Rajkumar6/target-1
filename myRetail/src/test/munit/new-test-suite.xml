@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd">
+    <munit:config name="munit" doc:name="MUnit configuration" mock-connectors="false" mock-inbounds="false"/>
+    <spring:beans>
+        <spring:import resource="classpath:myRetail.xml"/>
+    </spring:beans>
+    <munit:test name="new-test-suite-put:/products/{id}:myRetail-configTest" description="Test">
+        <mock:when messageProcessor=".*:.*" doc:name="Mongo DB">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Mongo DB']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[{&quot;_id&quot;:13860428,&quot;current_price&quot;:{&quot;value&quot;: 13.49,&quot;currency_code&quot;:&quot;USD&quot;}]"/>
+        </mock:when>
+        <mock:when messageProcessor=".*:.*" doc:name="Mock Get Status">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['getStatus']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[{&quot;id&quot;:13860428,&quot;name&quot;:&quot;The Big Lebowski (Blu-ray) (Widescreen)&quot;,&quot;current_price&quot;:{&quot;value&quot;: 13.49,&quot;currency_code&quot;:&quot;USD&quot;}}]"/>
+        </mock:when>
+        <set-variable variableName="id" value="13860428" doc:name="Variable"/>
+        <flow-ref name="put:/products/{id}:myRetail-config" doc:name="Flow-ref to put:/products/{id}:myRetail-config"/>
+        <munit:assert-payload-equals expectedValue="{&quot;id&quot;:13860428,&quot;name&quot;:&quot;The Big Lebowski (Blu-ray) (Widescreen)&quot;,&quot;current_price&quot;:{&quot;value&quot;: 13.49,&quot;currency_code&quot;:&quot;USD&quot;}}" doc:name="Assert Payload"/>
+    </munit:test>
+    <munit:test name="new-test-suite-getStatusTest" description="Test">
+        <mock:when messageProcessor=".*:.*" doc:name="Mock HTTP">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['HTTP']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[]"/>
+        </mock:when>
+        <mock:when messageProcessor=".*:.*" doc:name="Mock DB">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Mongo DB']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[]"/>
+        </mock:when>
+        <mock:when messageProcessor=".*:.*" doc:name="Mock DB Conversion">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Mongo DB']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[]"/>
+        </mock:when>
+        <set-variable variableName="id" value="13860428" doc:name="Variable"/>
+        <flow-ref name="getStatus" doc:name="Flow-ref to getStatus"/>
+    </munit:test>
+    <munit:test name="new-test-suite-get:/products/{id}:myRetail-configTest" description="Test">
+        <mock:when messageProcessor=".*:.*" doc:name="Mock Get Status">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['getStatus']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[{&quot;id&quot;:13860428,&quot;name&quot;:&quot;The Big Lebowski (Blu-ray) (Widescreen)&quot;,&quot;current_price&quot;:{&quot;value&quot;: 13.49,&quot;currency_code&quot;:&quot;USD&quot;}}]"/>
+        </mock:when>
+        <set-variable variableName="id" value="13860428" doc:name="Variable"/>
+        <flow-ref name="get:/products/{id}:myRetail-config" doc:name="Flow-ref to get:/products/{id}:myRetail-config"/>
+        <munit:assert-payload-equals expectedValue="{name=BIG LEBOWSKI, THE Blu-ray, current_price=&quot;{\&quot;value\&quot;:5.79,\&quot;currency_code\&quot;:\&quot;USD\&quot;}&quot;, id=13860428}" doc:name="Assert Payload"/>
+    </munit:test>
+</mule>
